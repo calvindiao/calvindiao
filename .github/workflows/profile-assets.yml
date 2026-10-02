@@ -1,0 +1,80 @@
+name: Update profile components
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 8 * * *'
+  push:
+    paths:
+      - '.github/workflows/profile-assets.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: profile-components
+  cancel-in-progress: true
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Check out profile
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Select current year
+        id: period
+        run: echo "year=$(date -u +%Y)" >> "$GITHUB_OUTPUT"
+
+      - name: Generate contribution snakes
+        uses: Platane/snk/svg-only@d8f6715049803e982ee5ff501b6b9b7d5deeb09b # v3
+        with:
+          github_user_name: ${{ github.repository_owner }}
+          outputs: |
+            profile/snake-latte.svg?color_snake=#df8e1d&color_dots=#ccd0da,#b7bdf8,#8aadf4,#7287fd,#8839ef
+            profile/snake-mocha.svg?color_snake=#f9e2af&color_dots=#313244,#45475a,#585b70,#89b4fa,#cba6f7
+
+      - name: Generate light statistics
+        uses: stats-organization/github-readme-stats-action@27f3601ffd7302c6ffaefb472ba8383d2a296e3f # v1
+        with:
+          card: stats
+          options: username=${{ github.repository_owner }}&commits_year=${{ steps.period.outputs.year }}&hide=contribs&hide_rank=true&show_icons=true&hide_border=true&disable_animations=true&custom_title=GitHub%20activity&card_width=300&text_bold=false&title_color=8839ef&text_color=4c4f69&icon_color=7287fd&bg_color=eff1f5
+          path: profile/stats-latte.svg
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Generate dark statistics
+        uses: stats-organization/github-readme-stats-action@27f3601ffd7302c6ffaefb472ba8383d2a296e3f # v1
+        with:
+          card: stats
+          options: username=${{ github.repository_owner }}&commits_year=${{ steps.period.outputs.year }}&hide=contribs&hide_rank=true&show_icons=true&hide_border=true&disable_animations=true&custom_title=GitHub%20activity&card_width=300&text_bold=false&title_color=cba6f7&text_color=cdd6f4&icon_color=89b4fa&bg_color=1e1e2e
+          path: profile/stats-mocha.svg
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Normalize SVGs and respect reduced motion
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          for path in Path('profile').glob('snake-*.svg'):
+              svg = path.read_text()
+              rule = '@media (prefers-reduced-motion: reduce){.s,.c,.u{animation:none!important}}'
+              svg = svg.replace('</style>', rule + '</style>', 1)
+              path.write_text(svg)
+          for path in Path('profile').glob('*.svg'):
+              path.write_text('\n'.join(line.rstrip() for line in path.read_text().splitlines()).rstrip() + '\n')
+          PY
+
+      - name: Save generated images
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add profile/*.svg
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git commit -m 'Update profile activity images'
+          git push

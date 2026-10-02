@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="244" height="30" viewBox="0 0 244 30" role="img" aria-label="Chromium contributor">
+  <rect width="244" height="30" rx="6" fill="#1e1e2e"/>
+  <rect x="12" y="9" width="4" height="12" fill="#89b4fa"/>
+  <rect x="16" y="5" width="8" height="4" fill="#cba6f7"/>
+  <rect x="16" y="21" width="8" height="4" fill="#cba6f7"/>
+  <text x="36" y="20" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="14" fill="#cba6f7">Chromium contributor</text>
+</svg>
