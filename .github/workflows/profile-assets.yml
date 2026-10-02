@@ -7,6 +7,9 @@ on:
   push:
     paths:
       - '.github/workflows/profile-assets.yml'
+      - 'scripts/render-stats.mjs'
+      - 'package.json'
+      - 'package-lock.json'
 
 permissions:
   contents: read
@@ -24,10 +27,6 @@ jobs:
       - name: Check out profile
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
-      - name: Select current year
-        id: period
-        run: echo "year=$(date -u +%Y)" >> "$GITHUB_OUTPUT"
-
       - name: Generate contribution snakes
         uses: Platane/snk/svg-only@d8f6715049803e982ee5ff501b6b9b7d5deeb09b # v3
         with:
@@ -36,21 +35,20 @@ jobs:
             profile/snake-latte.svg?color_snake=#df8e1d&color_dots=#ccd0da,#b7bdf8,#8aadf4,#7287fd,#8839ef
             profile/snake-mocha.svg?color_snake=#f9e2af&color_dots=#313244,#45475a,#585b70,#89b4fa,#cba6f7
 
-      - name: Generate light statistics
-        uses: stats-organization/github-readme-stats-action@27f3601ffd7302c6ffaefb472ba8383d2a296e3f # v1
+      - name: Set up Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
         with:
-          card: stats
-          options: username=${{ github.repository_owner }}&commits_year=${{ steps.period.outputs.year }}&hide=contribs&hide_rank=true&show_icons=true&hide_border=true&disable_animations=true&custom_title=GitHub%20activity&card_width=300&text_bold=false&title_color=8839ef&text_color=4c4f69&icon_color=7287fd&bg_color=eff1f5
-          path: profile/stats-latte.svg
-          token: ${{ secrets.GITHUB_TOKEN }}
+          node-version: '24'
+          cache: npm
 
-      - name: Generate dark statistics
-        uses: stats-organization/github-readme-stats-action@27f3601ffd7302c6ffaefb472ba8383d2a296e3f # v1
-        with:
-          card: stats
-          options: username=${{ github.repository_owner }}&commits_year=${{ steps.period.outputs.year }}&hide=contribs&hide_rank=true&show_icons=true&hide_border=true&disable_animations=true&custom_title=GitHub%20activity&card_width=300&text_bold=false&title_color=cba6f7&text_color=cdd6f4&icon_color=89b4fa&bg_color=1e1e2e
-          path: profile/stats-mocha.svg
-          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install statistics renderer
+        run: npm ci --ignore-scripts --no-audit --no-fund
+
+      - name: Generate public statistics
+        run: npm run stats
+        env:
+          GITHUB_USERNAME: ${{ github.repository_owner }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Normalize SVGs and respect reduced motion
         shell: bash
@@ -64,6 +62,12 @@ jobs:
               path.write_text(svg)
           for path in Path('profile').glob('*.svg'):
               path.write_text('\n'.join(line.rstrip() for line in path.read_text().splitlines()).rstrip() + '\n')
+          import xml.etree.ElementTree as ET
+          for path in Path('profile').glob('*.svg'):
+              ET.parse(path)
+              svg = path.read_text()
+              if 'Something went wrong' in svg or 'Resource not accessible' in svg:
+                  raise SystemExit(f'{path.name}: renderer returned an error card')
           PY
 
       - name: Save generated images

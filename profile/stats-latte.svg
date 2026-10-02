@@ -8,8 +8,8 @@
         role="img"
         aria-labelledby="descId"
       >
-        <title id="titleId">GitHub activity, Rank: C</title>
-        <desc id="descId">Total Stars Earned: 1, Total Commits  (2026) : 12, Total PRs: 0, Total Issues: 8</desc>
+        <title id="titleId">GitHub activity, Rank: </title>
+        <desc id="descId">Total Stars Earned: 1, Total Commits  (2026) : 15, Total PRs: 0, Total Issues: 8</desc>
         <style>
           .header {
             font: 600 18px 'Segoe UI', Ubuntu, Sans-Serif;
@@ -114,7 +114,7 @@
           class="card-bg"
           x="0.5"
           y="0.5"
-          rx="8"
+          rx="4.5"
           height="99%"
           stroke="#e4e2e2"
           width="299"
@@ -173,7 +173,7 @@
         x="219.01"
         y="12.5"
         data-testid="commits"
-      >12</text>
+      >15</text>
     </g>
   </g><g transform="translate(0, 50)">
     <g class="stagger" style="animation-delay: 750ms" transform="translate(25, 0)">

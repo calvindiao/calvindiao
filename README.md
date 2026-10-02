@@ -44,4 +44,4 @@ Browser internals, immersive systems, and things I build.
 
 [Blog](https://techliker.com/) · [LinkedIn](https://www.linkedin.com/in/chenhaodiao/)
 
-<sub>Catppuccin colors · [snk](https://github.com/Platane/snk) · [GitHub Readme Stats](https://github.com/anuraghazra/github-readme-stats), generated with its recommended [Action](https://github.com/stats-organization/github-readme-stats-action). Updated daily.</sub>
+<sub>Catppuccin colors · [snk](https://github.com/Platane/snk) · [GitHub Readme Stats](https://github.com/anuraghazra/github-readme-stats), using the maintained [renderer](https://github.com/stats-organization/github-stats-extended). Updated daily.</sub>
