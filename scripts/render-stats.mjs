@@ -76,23 +76,30 @@ for (const [name, count] of Object.entries(counts)) {
 }
 
 const themes = {
-  latte: { title_color: '8839ef', text_color: '4c4f69', icon_color: '7287fd', bg_color: 'eff1f5' },
-  mocha: { title_color: 'cba6f7', text_color: 'cdd6f4', icon_color: '89b4fa', bg_color: '1e1e2e' },
+  latte: { title_color: '8839ef', text_color: '4c4f69', icon_color: '7287fd', bg_color: 'eff1f5', border_color: 'ccd0da' },
+  mocha: { title_color: 'cba6f7', text_color: 'cdd6f4', icon_color: '89b4fa', bg_color: '1e1e2e', border_color: '313244' },
 };
 
 for (const [theme, colors] of Object.entries(themes)) {
-  const svg = renderStatsCard({
+  let svg = renderStatsCard({
     name: 'Calvin Diao', ...counts,
     // The rank is disabled; its required rendering value is never displayed.
     rank: { level: '', percentile: 100 },
   }, {
     ...colors, custom_title: 'GitHub activity', commits_year: year,
-    hide: ['contribs'], hide_rank: true, show_icons: true, hide_border: true,
-    disable_animations: true, card_width: 300, text_bold: false,
+    hide: ['contribs'], hide_rank: true, show_icons: true, hide_border: false,
+    disable_animations: true, card_width: 350, line_height: 32,
+    border_radius: 12, text_bold: false,
   }, username);
   if (!svg.includes('<svg') || /Something went wrong|Resource not accessible/i.test(svg)) {
     throw new Error('Stats renderer returned an error card.');
   }
+  // Only enlarge the stat text. The existing label and value columns still have
+  // room for the longest English label at 16px; retain all their coordinates.
+  const statFont = /(\.stat\s*\{\s*font:\s*600\s+)14px\b/g;
+  if ([...svg.matchAll(statFont)].length !== 1) throw new Error('Stats font styling changed upstream.');
+  svg = svg.replace(statFont, (_, prefix) => `${prefix}16px`)
+    .replace('.stat { font-size:12px; }', '.stat { font-size:16px; }');
   await writeFile(new URL(`../profile/stats-${theme}.svg`, import.meta.url), svg);
 }
 console.log(`Rendered public GitHub activity for ${year}: ${JSON.stringify(counts)}`);

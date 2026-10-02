@@ -1,8 +1,8 @@
 
       <svg
-        width="300"
-        height="170"
-        viewBox="0 0 300 170"
+        width="350"
+        height="205"
+        viewBox="0 0 350 205"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
         role="img"
@@ -22,11 +22,11 @@
           }
 
     .stat {
-      font: 600 14px 'Segoe UI', Ubuntu, "Helvetica Neue", Sans-Serif; fill: #cdd6f4;
+      font: 600 16px 'Segoe UI', Ubuntu, "Helvetica Neue", Sans-Serif; fill: #cdd6f4;
     }
     @supports(-moz-appearance: auto) {
       /* Selector detects Firefox */
-      .stat { font-size:12px; }
+      .stat { font-size:16px; }
     }
     .stagger {
       opacity: 0;
@@ -114,12 +114,12 @@
           class="card-bg"
           x="0.5"
           y="0.5"
-          rx="4.5"
+          rx="12"
           height="99%"
-          stroke="#e4e2e2"
-          width="299"
+          stroke="#313244"
+          width="349"
           fill="#1e1e2e"
-          stroke-opacity="0"
+          stroke-opacity="1"
         />
 
 
@@ -160,7 +160,7 @@
         data-testid="stars"
       >1</text>
     </g>
-  </g><g transform="translate(0, 25)">
+  </g><g transform="translate(0, 32)">
     <g class="stagger" style="animation-delay: 600ms" transform="translate(25, 0)">
 
     <svg data-testid="icon" class="icon" viewBox="0 0 16 16" version="1.1" width="16" height="16">
@@ -175,7 +175,7 @@
         data-testid="commits"
       >16</text>
     </g>
-  </g><g transform="translate(0, 50)">
+  </g><g transform="translate(0, 64)">
     <g class="stagger" style="animation-delay: 750ms" transform="translate(25, 0)">
 
     <svg data-testid="icon" class="icon" viewBox="0 0 16 16" version="1.1" width="16" height="16">
@@ -190,7 +190,7 @@
         data-testid="prs"
       >0</text>
     </g>
-  </g><g transform="translate(0, 75)">
+  </g><g transform="translate(0, 96)">
     <g class="stagger" style="animation-delay: 900ms" transform="translate(25, 0)">
 
     <svg data-testid="icon" class="icon" viewBox="0 0 16 16" version="1.1" width="16" height="16">

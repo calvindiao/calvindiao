@@ -1,47 +1,31 @@
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./profile/header-mocha.svg">
-  <source media="(prefers-color-scheme: light)" srcset="./profile/header-latte.svg">
-  <img src="./profile/header-mocha.svg" width="712" alt="Calvin Diao">
-</picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="./profile/header-mocha.svg?v=2"><source media="(prefers-color-scheme: light)" srcset="./profile/header-latte.svg?v=2"><img src="./profile/header-mocha.svg?v=2" width="712" alt="Calvin Diao"></picture>
 
-**Less clicking. More tinkering.**
+<p><strong>Less clicking. More tinkering.</strong><br>
+Browser internals, immersive systems, and things I build.</p>
 
-Browser internals, immersive systems, and things I build.
+<p>
+<a href="https://chromium-review.googlesource.com/c/chromium/src/+/6707102"><picture><source media="(prefers-color-scheme: dark)" srcset="./profile/chromium-mocha.svg?v=2"><source media="(prefers-color-scheme: light)" srcset="./profile/chromium-latte.svg?v=2"><img src="./profile/chromium-mocha.svg?v=2" width="712" alt="Chromium contributor — Google Summer of Code 2025"></picture></a><br>
+<strong>Google Summer of Code 2025</strong> · <a href="https://chromium-review.googlesource.com/c/chromium/src/+/6707102">Structured DNS errors in Chromium</a>
+</p>
 
-<a href="https://chromium-review.googlesource.com/c/chromium/src/+/6707102">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="./profile/chromium-mocha.svg">
-    <source media="(prefers-color-scheme: light)" srcset="./profile/chromium-latte.svg">
-    <img src="./profile/chromium-mocha.svg" width="244" alt="Chromium contributor">
-  </picture>
-</a>
+<h3>Selected work</h3>
 
-**Google Summer of Code 2025** — [Structured DNS Error Support in Chromium's DNS Stack](https://chromium-review.googlesource.com/c/chromium/src/+/6707102).
+<p>
+<a href="https://techliker.com/ar-panoramic-calling/"><picture><source media="(prefers-color-scheme: dark)" srcset="./profile/ar360-mocha.svg?v=2"><source media="(prefers-color-scheme: light)" srcset="./profile/ar360-latte.svg?v=2"><img src="./profile/ar360-mocha.svg?v=2" width="350" alt="AR360 panoramic calling — immersive video calls with Unity, Rokid and Insta360. Explore the project."></picture></a>
+<a href="https://techliker.com/smart-car-2021/"><picture><source media="(prefers-color-scheme: dark)" srcset="./profile/motorcycle-mocha.svg?v=2"><source media="(prefers-color-scheme: light)" srcset="./profile/motorcycle-latte.svg?v=2"><img src="./profile/motorcycle-mocha.svg?v=2" width="350" alt="Self-balancing motorcycle — sensor fusion and fuzzy PID. National second prize, 2021. Explore the project."></picture></a>
+</p>
 
-### Selected work
+<p>
+<a href="https://github.com/calvindiao/personal-codex-skills"><picture><source media="(prefers-color-scheme: dark)" srcset="./profile/skills-mocha.svg?v=2"><source media="(prefers-color-scheme: light)" srcset="./profile/skills-latte.svg?v=2"><img src="./profile/skills-mocha.svg?v=2" width="350" alt="Personal Codex skills — reusable development workflows for macOS, Windows and Linux. Browse the repository."></picture></a>
+<picture><source media="(prefers-color-scheme: dark)" srcset="./profile/stats-mocha.svg?v=2"><source media="(prefers-color-scheme: light)" srcset="./profile/stats-latte.svg?v=2"><img src="./profile/stats-mocha.svg?v=2" width="350" alt="Calvin Diao's public GitHub statistics"></picture>
+</p>
 
-- **[AR360 panoramic calling](https://techliker.com/ar-panoramic-calling/)** — Immersive video calls with Unity, Rokid and Insta360.
-- **[Self-balancing motorcycle](https://techliker.com/smart-car-2021/)** — Sensor fusion, fuzzy PID and custom hardware. National second prize, 2021.
-- **[Personal Codex skills](https://github.com/calvindiao/personal-codex-skills)** — Reusable development workflows across macOS, Windows and Linux.
+<p><sub>Statistics cover public GitHub repositories. Chromium contributions are tracked on <a href="https://chromium-review.googlesource.com/q/owner:diaochenhao@gmail.com">Gerrit</a>.</sub></p>
 
-### GitHub activity
+<h3>Contribution trail</h3>
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./profile/stats-mocha.svg">
-  <source media="(prefers-color-scheme: light)" srcset="./profile/stats-latte.svg">
-  <img src="./profile/stats-mocha.svg" width="300" alt="Calvin Diao's public GitHub statistics">
-</picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="./profile/snake-mocha.svg?v=2"><source media="(prefers-color-scheme: light)" srcset="./profile/snake-latte.svg?v=2"><img src="./profile/snake-mocha.svg?v=2" width="712" alt="A snake animation based on Calvin Diao's GitHub contribution calendar"></picture>
 
-<sub>Public GitHub repositories. Chromium contributions are tracked separately on [Gerrit](https://chromium-review.googlesource.com/q/owner:diaochenhao@gmail.com).</sub>
+<p><a href="https://techliker.com/">Blog</a> · <a href="https://www.linkedin.com/in/chenhaodiao/">LinkedIn</a></p>
 
-### Contribution trail
-
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./profile/snake-mocha.svg">
-  <source media="(prefers-color-scheme: light)" srcset="./profile/snake-latte.svg">
-  <img src="./profile/snake-mocha.svg" width="854" alt="A snake animation based on Calvin Diao's GitHub contribution calendar">
-</picture>
-
-[Blog](https://techliker.com/) · [LinkedIn](https://www.linkedin.com/in/chenhaodiao/)
-
-<sub>Catppuccin colors · [snk](https://github.com/Platane/snk) · [GitHub Readme Stats](https://github.com/anuraghazra/github-readme-stats), using the maintained [renderer](https://github.com/stats-organization/github-stats-extended). Updated daily.</sub>
+<p><sub>Catppuccin colors · <a href="https://github.com/Platane/snk">snk</a> · <a href="https://github.com/anuraghazra/github-readme-stats">GitHub Readme Stats</a>, using the maintained <a href="https://github.com/stats-organization/github-stats-extended">renderer</a>. Activity updated daily.</sub></p>

@@ -3,3 +3,4 @@ SETUP.md
 profile/snapshot.json
 .DS_Store
 node_modules/
+.preview/
