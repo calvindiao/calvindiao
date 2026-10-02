@@ -24,7 +24,7 @@ Browser internals, immersive systems, and things I build.</p>
 
 <h3>Contribution trail</h3>
 
-<picture><source media="(prefers-color-scheme: dark)" srcset="./profile/snake-mocha.svg?v=2"><source media="(prefers-color-scheme: light)" srcset="./profile/snake-latte.svg?v=2"><img src="./profile/snake-mocha.svg?v=2" width="712" alt="A snake animation based on Calvin Diao's GitHub contribution calendar"></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="./profile/snake-mocha.svg?v=3"><source media="(prefers-color-scheme: light)" srcset="./profile/snake-latte.svg?v=3"><img src="./profile/snake-mocha.svg?v=3" width="712" alt="A snake animation based on Calvin Diao's GitHub contribution calendar"></picture>
 
 <p><a href="https://techliker.com/">Blog</a> · <a href="https://www.linkedin.com/in/chenhaodiao/">LinkedIn</a></p>
 
