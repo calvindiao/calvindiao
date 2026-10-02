@@ -1,3 +1,5 @@
+<div align="center">
+
 <picture><source media="(prefers-color-scheme: dark)" srcset="./profile/header-mocha.svg?v=2"><source media="(prefers-color-scheme: light)" srcset="./profile/header-latte.svg?v=2"><img src="./profile/header-mocha.svg?v=2" width="712" alt="Calvin Diao"></picture>
 
 <p><strong>Less clicking. More tinkering.</strong><br>
@@ -29,3 +31,5 @@ Browser internals, immersive systems, and things I build.</p>
 <p><a href="https://techliker.com/">Blog</a> · <a href="https://www.linkedin.com/in/chenhaodiao/">LinkedIn</a></p>
 
 <p><sub>Catppuccin colors · <a href="https://github.com/Platane/snk">snk</a> · <a href="https://github.com/anuraghazra/github-readme-stats">GitHub Readme Stats</a>, using the maintained <a href="https://github.com/stats-organization/github-stats-extended">renderer</a>. Activity updated daily.</sub></p>
+
+</div>
