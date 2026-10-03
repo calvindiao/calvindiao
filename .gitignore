@@ -2,5 +2,6 @@ README-snippet.md
 SETUP.md
 profile/snapshot.json
 .DS_Store
-node_modules/
 .preview/
+__pycache__/
+*.pyc

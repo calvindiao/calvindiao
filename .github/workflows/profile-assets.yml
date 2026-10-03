@@ -5,17 +5,18 @@ on:
   schedule:
     - cron: '0 8 * * *'
   push:
+    branches: [main]
     paths:
       - '.github/workflows/profile-assets.yml'
-      - 'scripts/render-stats.mjs'
-      - 'package.json'
-      - 'package-lock.json'
+      - 'scripts/**'
+      - 'profile/name-glyphs.json'
 
 permissions:
   contents: read
 
+# One run at a time per branch: a run on another branch (workflow_dispatch) must never cancel the daily run on main.
 concurrency:
-  group: profile-components
+  group: profile-components-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -27,58 +28,78 @@ jobs:
       - name: Check out profile
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
+      # snk plays the contribution graph; scripts/build.py frames the result as the mini-game.
+      # The colours are derived from scripts/theme.py (a gold ramp on Catppuccin neutrals). build.py
+      # recolours the files anyway and warns if these two lines drift from the theme.
       - name: Generate contribution snakes
         uses: Platane/snk/svg-only@d8f6715049803e982ee5ff501b6b9b7d5deeb09b # v3
         with:
           github_user_name: ${{ github.repository_owner }}
           outputs: |
-            profile/snake-latte.svg?color_snake=#df8e1d&color_dots=#e6e9ef,#6085ca,#3169c8,#7942c2,#a1247d
-            profile/snake-mocha.svg?color_snake=#f9e2af&color_dots=#2a2d3e,#6c95db,#89b4fa,#cba6f7,#f5c2e7
-
-      - name: Set up Node.js
-        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
-        with:
-          node-version: '24'
-          cache: npm
-
-      - name: Install statistics renderer
-        run: npm ci --ignore-scripts --no-audit --no-fund
-
-      - name: Generate public statistics
-        run: npm run stats
-        env:
-          GITHUB_USERNAME: ${{ github.repository_owner }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            data/snake-latte.svg?color_snake=#4c4f69&color_dots=#ccd0da,#c7b299,#c49e6f,#c18d4a,#bf802e
+            data/snake-mocha.svg?color_snake=#cdd6f4&color_dots=#313244,#7d756d,#ad9f86,#d9c69e,#f9e2af
 
       - name: Normalize SVGs and respect reduced motion
         shell: bash
         run: |
           python3 - <<'PY'
           from pathlib import Path
-          for path in Path('profile').glob('snake-*.svg'):
-              svg = path.read_text()
-              rule = '@media (prefers-reduced-motion: reduce){.s,.c,.u{animation:none!important}}'
-              svg = svg.replace('</style>', rule + '</style>', 1)
-              path.write_text(svg)
-          for path in Path('profile').glob('*.svg'):
-              path.write_text('\n'.join(line.rstrip() for line in path.read_text().splitlines()).rstrip() + '\n')
           import xml.etree.ElementTree as ET
-          for path in Path('profile').glob('*.svg'):
+          rule = '@media (prefers-reduced-motion: reduce){.s,.c,.u{animation:none!important}}'
+          # Only snk's output is checked here. profile/*.svg are written by build.py in the next step, so a
+          # bad committed image must never block the run that would regenerate it.
+          for path in Path('data').glob('snake-*.svg'):
+              svg = path.read_text(encoding='utf-8')
+              if rule not in svg:
+                  svg = svg.replace('</style>', rule + '</style>', 1)
+              svg = '\n'.join(line.rstrip() for line in svg.splitlines()).rstrip() + '\n'
+              path.write_text(svg, encoding='utf-8')
               ET.parse(path)
-              svg = path.read_text()
               if 'Something went wrong' in svg or 'Resource not accessible' in svg:
-                  raise SystemExit(f'{path.name}: renderer returned an error card')
+                  raise SystemExit(f'{path.name}: snk returned an error card')
           PY
 
-      - name: Save generated images
+      # Live Gerrit changes and contribution count. Any failure keeps the committed data/*.json,
+      # prints a warning annotation and carries on, so a bad day never produces a broken image.
+      - name: Build profile images and README
+        run: python3 scripts/build.py --live
+        env:
+          GITHUB_USERNAME: ${{ github.repository_owner }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # build.py keeps the mini-game under the size budget itself (it falls back to the still graph), so
+      # this is a last safety net against a broken file, not a gate a busy contribution year can trip.
+      - name: Validate generated files
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import re
+          from pathlib import Path
+          import xml.etree.ElementTree as ET
+          total = 0
+          for path in Path('profile').glob('*.svg'):
+              ET.parse(path)
+              size = path.stat().st_size
+              total += size
+              if size > 60_000:
+                  raise SystemExit(f'{path.name}: {size} bytes exceeds the 60 KB budget')
+          if total > 400_000:
+              raise SystemExit(f'profile/*.svg total {total} bytes exceeds 400 KB')
+          readme = Path('README.md').read_text(encoding='utf-8')
+          for ref in sorted(set(re.findall(r'\./(profile/[^"?]+)', readme))):
+              if not Path(ref).is_file():
+                  raise SystemExit(f'README.md refers to {ref}, which does not exist')
+          PY
+
+      - name: Save generated files
         shell: bash
         run: |
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add profile/*.svg
+          git add -A README.md data profile
           if git diff --cached --quiet; then
             exit 0
           fi
-          git commit -m 'Update profile activity images'
+          git commit -m 'Update profile data and images'
           git push

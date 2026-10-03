@@ -1,0 +1,40 @@
+{
+ "as_of": "2026-10-02",
+ "changes": [
+  {
+   "_number": 6645800,
+   "status": "MERGED",
+   "subject": "Clean stale parameter comments and update AUTHORS",
+   "created": "2025-06-15 17:27:55.000000000",
+   "submitted": "2025-06-20 01:47:33.000000000",
+   "insertions": 5,
+   "deletions": 9
+  },
+  {
+   "_number": 6707102,
+   "status": "MERGED",
+   "subject": "Add parsing and unit tests for Public Resolver Errors",
+   "created": "2025-07-06 21:11:46.000000000",
+   "submitted": "2025-09-08 04:57:29.000000000",
+   "insertions": 510,
+   "deletions": 2
+  },
+  {
+   "_number": 7472657,
+   "status": "MERGED",
+   "subject": "DnsQuery: Refactor EDE request injection for structured DNS errors",
+   "created": "2026-01-14 20:15:57.000000000",
+   "submitted": "2026-01-29 17:07:11.000000000",
+   "insertions": 237,
+   "deletions": 225
+  },
+  {
+   "_number": 7551812,
+   "status": "NEW",
+   "subject": "[DNS] Plumb Extended DNS Errors (EDE) to network error page",
+   "created": "2026-02-08 05:18:56.000000000",
+   "insertions": 866,
+   "deletions": 161
+  }
+ ]
+}
