@@ -87,7 +87,7 @@ def _is_wip(c):
 
 
 def change_row(c):
-    """One Gerrit change reduced to the fields the page uses, or None when it is unusable.
+    """One Gerrit change reduced to the fields worth keeping, or None when it is unusable.
 
     A change without a number, a shown status, a subject or a real creation date cannot be drawn and is
     dropped. So is a work-in-progress upload: Gerrit reports it as NEW, but nobody is reviewing it yet, so

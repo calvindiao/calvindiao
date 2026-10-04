@@ -345,20 +345,6 @@ def svg_open(w, h, title, desc=None, style=''):
             f'role="img" aria-label="{t}">\n<title>{escape(title)}</title>{d}{st}\n')
 
 
-MONO = 'ui-monospace, SFMono-Regular, Menlo, Consolas, monospace'
-
-
-def mono_text(x, y, s, size, fill, weight=400, anchor='start', adv=0.6):
-    """System-mono line with a hard length so fallback fonts can never overflow."""
-    s = clean(s)
-    n = len(s)
-    length = round(n * size * adv, 1)
-    anc = f' text-anchor="{anchor}"' if anchor != 'start' else ''
-    w = f' font-weight="{weight}"' if weight != 400 else ''
-    return (f'<text x="{x}" y="{y}" fill="{fill}" font-family="{MONO}" font-size="{size}"{w}{anc} '
-            f'textLength="{length}" lengthAdjust="spacingAndGlyphs">{escape(s)}</text>')
-
-
 _BAD_XML = re.compile('[\x00-\x08\x0b\x0c\x0e-\x1f\ud800-\udfff\ufffe\uffff]')
 
 
@@ -376,40 +362,3 @@ def write_text(path, text: str) -> None:
     """UTF-8 with LF line endings on every platform, so a rebuild is byte-identical everywhere."""
     with open(path, 'w', encoding='utf-8', newline='\n') as f:
         f.write(text)
-
-
-def fit_lines(s: str, max_w: float, size: float, max_lines: int, adv: float = 0.6):
-    """Wrap system-mono text into at most `max_lines` lines no wider than `max_w` pixels.
-
-    Width is measured, not guessed: mono_text() pins every line to len * size * adv pixels, so a line
-    of n characters is exactly n * size * adv wide. Words longer than a line are broken, and when the
-    text does not fit the last line is cut and ends in an ellipsis.
-    """
-    per = max(1, int(max_w // (size * adv)))
-    words = clean(s).split(' ')
-    lines, cur = [], ''
-    i = 0
-    while i < len(words):
-        w = words[i]
-        if len(w) > per:  # a single word wider than a line: break it
-            if cur:
-                lines.append(cur)
-                cur = ''
-            lines.append(w[:per])
-            words[i] = w[per:]
-            continue
-        if not cur:
-            cur = w
-        elif len(cur) + 1 + len(w) <= per:
-            cur += ' ' + w
-        else:
-            lines.append(cur)
-            cur = w
-        i += 1
-    if cur:
-        lines.append(cur)
-    if len(lines) > max_lines:
-        lines = lines[:max_lines]
-        last = lines[-1]
-        lines[-1] = (last[:per - 1] if len(last) >= per else last).rstrip() + '…'
-    return lines

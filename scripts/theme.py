@@ -1,7 +1,7 @@
 """Catppuccin Mocha (dark) and Latte (light) roles.
 
 The page uses one accent, Catppuccin yellow ("gold"): menu cursor, tab titles, the level in
-progress, the sign-off. Everything else is the theme's blue-grey neutrals plus two meanings that
+progress, the prize. Everything else is the theme's blue-grey neutrals plus two meanings that
 never change: green is merged / added, red is removed.
 
 Fills use the stock colours. Anything that carries *text* uses the *_t / *_c / *_m variants, which
@@ -37,7 +37,6 @@ def build(t: dict) -> dict:
     toward = '#1e2030'
     # the darkest surface any text sits on in light mode: the tinted sky / route ground
     worst = mix(t['base'], t['blue'], .31)
-    t['gold_t'] = t['gold'] if dark else ensure_contrast(t['gold'], worst, MIN_TEXT, toward=toward)
     if not dark:
         t['sub'] = ensure_contrast(t['sub'], worst, MIN_TEXT, toward=toward)
     # panel text (measured on the darker of mantle / route ground)
@@ -60,7 +59,6 @@ def build(t: dict) -> dict:
     t['tab_bg'] = t['s0'] if dark else '#4c4f69'
     t['tab_fg'] = '#f9e2af'
     t['tab_sub'] = t['sub'] if dark else '#cdd6f4'
-    t['tab_green'] = '#a6e3a1'
     t['bevel_hi'] = t['s0'] if dark else t['white']
     t['bevel_lo'] = t['mantle'] if dark else t['s0']
     return t

@@ -22,14 +22,13 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import data as datamod  # noqa: E402
 import sprites  # noqa: E402
-from pixelkit import (Doc, bayer, contrast, ensure_contrast, fit_lines, mix, mono_text, notched, panel,  # noqa: E402
-                      read_text, text_w, write_text)
+from pixelkit import Doc, bayer, contrast, ensure_contrast, mix, notched, panel, read_text, text_w, write_text  # noqa: E402
 from theme import THEMES  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 PROFILE = ROOT / 'profile'
 GLYPHS = json.loads(read_text(PROFILE / 'name-glyphs.json'))
-V = 2  # cache-buster in README image URLs: bump when a design change must reach readers who cached an image
+V = 3  # cache-buster in README image URLs: bump when a design change must reach readers who cached an image
 
 URL = dict(
     blog='https://techliker.com/',
@@ -38,7 +37,6 @@ URL = dict(
     gsoc='https://techliker.com/gsoc/',
     ar360='https://techliker.com/ar-panoramic-calling/',
     bike='https://techliker.com/smart-car-2021/',
-    car2020='https://techliker.com/smart-car-2020/',
     mocap='https://techliker.com/wearable-rehab-mocap/',
     skills='https://github.com/calvindiao/personal-codex-skills',
     snk='https://github.com/Platane/snk',
@@ -56,10 +54,8 @@ CSS = (
 
 SVG_OUT: dict[str, str] = {}
 MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC']
-WORDS = ['No', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten']
-ROUTE_MAX = 6    # stages drawn on the route banner (the newest ones)
-CARDS_MAX = 4    # stage cards shown under it (the newest ones)
-CARD_W = 356     # stage and quest cards: two of them plus the space between fit the 720px modules (2 x 356 + ~4.5)
+ROUTE_MAX = 6    # stops drawn on the route banner (the newest ones)
+CARD_W = 356     # project cards: two of them plus the space between fit the 720px modules (2 x 356 + ~4.5)
 NB = '\u00a0'    # no-break space: binds the last words of a line so a wrapped line never ends in one orphan word
 GAME_BUDGET = 58_000  # bytes for the animated mini-game (about 44,000 today); the workflow rejects any file over 60,000
 
@@ -81,15 +77,6 @@ def progress(n_merged, n_open):
     """'3 merged and 1 in review'; a zero is never named."""
     return ' and '.join(p for p in (f'{n_merged} merged' if n_merged else '', f'{n_open} in review' if n_open else '') if p) \
         or 'no changes yet'
-
-
-def plural(n, one, many):
-    return one if n == 1 else many
-
-
-def word(n, lower=False):
-    w = WORDS[n] if 0 <= n < len(WORDS) else str(n)
-    return w.lower() if lower else w
 
 
 # ======================================================================================
@@ -122,13 +109,6 @@ def inset(d, t, x, y, w, h, u=2, fill=None):
     p = d.pix(u, x, y)
     panel(p, 0, 0, w // u, h // u, t['slot_border'], fill or t['panel_deep'])
     return p
-
-
-def chip(d, t, x, y, label, color=None):
-    wpx = tw(label, 2) + 16
-    inset(d, t, x, y, wpx, 24)
-    d.text(x + 8, y + 5, label, color or t['sub'], 2)
-    return wpx
 
 
 def sprite(d, t, name, x, y, u, box=None):
@@ -172,15 +152,11 @@ def title_colors(t):
     return name, near, far
 
 
-def hero(t, data):
+def hero(t):
     W, H = 720, 360
     R = H // 4
-    cls = data['cls']
-    n_merged = sum(c['status'] == 'MERGED' for c in cls)
-    n_open = len(cls) - n_merged
     dark = t['name'] == 'dark'
-    desc = (f'Pixel-art title screen. Player 1 is Calvin Diao. The HUD shows Chromium progress: '
-            f'{progress(n_merged, n_open)}. The menu reads Less clicking, More tinkering.')
+    desc = 'Pixel-art title screen: Calvin Diao, with a small player standing on a hill. The menu reads Less clicking, More tinkering.'
     d = Doc(W, H, 'Calvin Diao: Less clicking. More tinkering.', desc, CSS)
     inside = notched(0, 0, W, H, 4)
 
@@ -213,8 +189,6 @@ def hero(t, data):
             tries += 1
             c, r = int(rnd() * 176) + 2, int(rnd() * 66) + 3
             x, y = c * 4, r * 4
-            if r < 14 and (c * 4 > 20):
-                continue  # keep the HUD row clean
             if 36 <= x <= 596 and 70 <= y <= 196:
                 continue  # title block
             if 36 <= x <= 520 and 204 <= y <= 296:
@@ -339,31 +313,6 @@ def hero(t, data):
     cur.text(0, 0, '▶', t['gold_m'])
     d.anim(cur, 'qn')
 
-    # ---- HUD -----------------------------------------------------------------------
-    d.text(24, 20, 'FILE 01', t['gold_t'], 4)
-    pips = cls[-8:]
-    n = len(pips)
-    total = n * 16 + (n - 1) * 8
-    xr = 696
-    xp0 = xr - total
-    xt = xp0 - 16 - tw('CHROMIUM', 4)
-    xi = xt - 12 - 32
-    rows, pal = sprites.catalogue(t)['ring']
-    d.pix(2, xi, 18).art(0, 0, rows, pal)
-    d.text(xt, 20, 'CHROMIUM', t['text'], 4)
-    if n:
-        pp = d.pix(4, xp0, 26)
-        blink = d.pix(4, xp0, 26)
-        for i, c in enumerate(pips):
-            c0 = i * 6
-            if c['status'] == 'MERGED':
-                pp.rect(c0, 0, 4, 4, t['green'])
-            else:
-                pp.rect(c0, 0, 4, 4, t['gold'])
-                pp.rect(c0 + 1, 1, 2, 2, stops[0])
-                blink.rect(c0 + 1, 1, 2, 2, t['gold'])
-        d.anim(blink, 'qb')
-
     # ---- frame ---------------------------------------------------------------------
     fr = d.pix(4)
     for c in range(1, 179):
@@ -378,27 +327,7 @@ def hero(t, data):
 
 
 # ======================================================================================
-# SECTION HEADING: an opaque title bar, so it reads in either theme even if the OS theme and
-# GitHub's theme disagree (a transparent heading would not)
-# ======================================================================================
-
-
-def heading(t, label):
-    W, H = 720, 52
-    d = Doc(W, H, label.title(), f'Section heading: {label.title()}')
-    window(d, t, W, H, fill=t['tab_bg'])
-    wtxt = tw(label, 4)
-    x0 = (W - wtxt) // 2
-    d.text(x0, 12, label, t['tab_fg'], 4)
-    for cx in (x0 - 44, x0 + wtxt + 28):
-        dm = d.pix(4, cx, 20)
-        for dc, dr in ((1, 0), (0, 1), (1, 1), (2, 1), (1, 2)):
-            dm.px(dc, dr, t['tab_fg'])
-    return d
-
-
-# ======================================================================================
-# WORLD 1: Chromium banner
+# CHROMIUM: the one banner that carries the credential
 # ======================================================================================
 
 
@@ -409,20 +338,20 @@ def world(t, data):
     n_merged = sum(c['status'] == 'MERGED' for c in cls)
     n_open = len(cls) - n_merged
     dark = t['name'] == 'dark'
-    W, H = 720, 324
-    desc = ('World 1: Chromium, net and DNS. '
-            + (f'A route of {n} {plural(n, "stage", "stages")}: '
-               + ', '.join(f"{c['stage']} {status_label(c)} {c['when'][:7]}" for c in shown) + '.'
+    W, H = 720, 296
+    desc = ('Chromium, net and DNS. '
+            + (f'{progress(n_merged, n_open)}. Timeline: '
+               + ', '.join(f"{status_label(c)} {c['when'][:7]}" for c in shown) + '.'
                if n else 'No changes yet.'))
-    d = Doc(W, H, 'World 1: Chromium', desc, CSS)
-    window(d, t, W, H, fill=t['panel_deep'])
+    d = Doc(W, H, 'Chromium', desc, CSS)
+    hr = window(d, t, W, H, fill=t['panel_deep'])[1]
 
     # ground band behind the route (dither seam + flat fill), with a few tufts
     gb = d.pix(4)
     gcol = mix(t['green'], t['panel'], .90 if dark else .86)
     tuft = mix(t['green'], t['panel'], .62 if dark else .60)
     for c in range(1, 178):
-        for r in range(40, 78):
+        for r in range(40, hr - 1):
             if r > 41 or bayer(c, r) < .5:
                 gb.px(c, r, gcol)
     for c, r in ((8, 46), (22, 49), (40, 45), (68, 47), (95, 45), (112, 48), (134, 46), (150, 49), (172, 46), (14, 52), (166, 53)):
@@ -478,7 +407,6 @@ def world(t, data):
             else:
                 panel(nodes, cx0, cy0, 10, 10, t['gold'], t['panel_deep'])
                 blink.rect(cx0 + 4, cy0 + 4, 2, 2, t['gold'])
-            d.text(xs[i] - tw(c['stage'], 4) // 2, 236, c['stage'], t['text'], 4)
         # month labels: drawn by priority (last, first, the rest); any that would collide is skipped
         placed = []
         for i in [n - 1] + ([0] if n > 1 else []) + list(range(1, n - 1)):
@@ -489,7 +417,7 @@ def world(t, data):
             if any(x < px + pw + 16 and px < x + wl + 16 for px, pw in placed):
                 continue
             placed.append((x, wl))
-            d.text(x, 272, ym, t['sub'] if c['status'] == 'MERGED' else t['gold_c'], 4)
+            d.text(x, 240, ym, t['text'] if c['status'] == 'MERGED' else t['gold_c'], 4)
         d.anim(blink, 'qb')
 
         # the player stands above the newest level still in review
@@ -505,135 +433,46 @@ def world(t, data):
 
 
 # ======================================================================================
-# STAGE CARDS: one per Chromium change
+# PROJECT CARDS: an icon, a name and one line. The whole card is the link.
 # ======================================================================================
 
 
-def human(n):
-    """1234 -> '1234', 12345 -> '12.3k', 1234567 -> '1.2M' (only used when the full number would not fit)."""
-    if n < 10_000:
-        return str(n)
-    for unit, mark in ((1e3, 'k'), (1e6, 'M'), (1e9, 'B'), (1e12, 'T')):
-        v = n / unit
-        if v < 999.95 or mark == 'T':
-            return f'{v:.1f}'.rstrip('0').rstrip('.') + mark
-
-
-def stats_line(date_txt, date_only, ins, dele, avail):
-    """(left text, plus, minus) for the card's stats row, choosing the fullest wording that fits.
-
-    The date and the line counts share one row of `avail` pixels. Full numbers and the full date win;
-    large counts shorten to 12.3k, and failing that the date drops its MERGED/OPENED word (the title bar
-    already says which). A change without line counts shows '--' instead of a made-up +0 -0.
-    """
-    if ins is None and dele is None:
-        return date_txt, '--', ''
-    ins, dele = ins or 0, dele or 0
-    for left in (date_txt, date_only):
-        for plus, minus in ((f'+{ins}', f'-{dele}'), (f'+{human(ins)}', f'-{human(dele)}')):
-            if tw(left, 2) + 16 + tw(plus, 2) + 12 + tw(minus, 2) <= avail:
-                return left, plus, minus
-    return '', f'+{human(ins)}', f'-{human(dele)}'
-
-
-def stage_card(t, cl):
-    W, H = CARD_W, 192
-    inner = W - 32
-    merged = cl['status'] == 'MERGED'
-    ins, dele = cl.get('insertions'), cl.get('deletions')
-    desc = (f"Chromium CL {cl['_number']}: {cl['subject']}. {status_label(cl).capitalize()} "
-            f"{'on' if merged else 'since'} {cl['when']}. {lines_txt(cl)}")
-    d = Doc(W, H, f"Stage {cl['stage']}: CL {cl['_number']}", desc, CSS)
-    window(d, t, W, H, tab=f"STAGE {cl['stage']}", border=None if merged else t['gold'])
-    # status in the title bar: a check for merged, a blinking dot for in review (shape, not colour alone)
-    if merged:
-        d.text(W - 16 - tw('MERGED', 2) - 20, 13, '✓', t['tab_green'], 2)
-        d.text(W - 16 - tw('MERGED', 2), 13, 'MERGED', t['tab_green'], 2)
-    else:
-        label = 'IN REVIEW'
-        d.text(W - 16 - tw(label, 2), 13, label, t['tab_fg'], 2)
-        dotp = d.pix(2, W - 16 - tw(label, 2) - 16, 13)
-        dotp.text(0, 0, '●', t['tab_fg'])
-        d.anim(dotp, 'qb')
-    d.text(16, 48, f"CL {cl['_number']}", t['text'] if merged else t['gold_c'], 4)
-    for i, ln in enumerate(fit_lines(cl['subject'], inner, 14, 2)):
-        d.add(mono_text(16, 100 + i * 19, ln, 14, t['text']))
-    d.pix(2, 16, 132).rect(0, 0, inner // 2, 1, t['rule'])
-    date_only = cl['when']
-    left, plus, minus = stats_line(('MERGED ' if merged else 'OPENED ') + date_only, date_only, ins, dele, inner)
-    if left:
-        d.text(16, 142, left, t['sub'], 2)
-    if minus:
-        xm = W - 16 - tw(minus, 2)
-        d.text(xm, 142, minus, t['red_c'], 2)
-        d.text(xm - 12 - tw(plus, 2), 142, plus, t['green_c'], 2)
-    else:  # no line counts: a dash, and an empty bar
-        d.text(W - 16 - tw(plus, 2), 142, plus, t['sub'], 2)
-    cells = inner // 4  # diff bar: additions vs removals, proportional
-    bar = d.pix(4, 16, 166)
-    if ins is None and dele is None:
-        bar.rect(0, 0, cells, 2, t['rule'])
-    else:
-        total = (ins or 0) + (dele or 0)
-        g = cells // 2 if not total else max(1, min(cells - 1, round(cells * (ins or 0) / total)))
-        bar.rect(0, 0, g, 2, t['green'])
-        bar.rect(g, 0, cells - g, 2, t['red'])
-    return d
-
-
-# ======================================================================================
-# SIDE QUEST CARDS
-# ======================================================================================
-
-# Oldest first, like the stages above them: the page reads as one progression.
-QUESTS = [
-    dict(key='bike', icon='bike', cat='EMBEDDED SYSTEMS', date='2021', title=['SELF-BALANCING', 'MOTORCYCLE'], sub='',
-         desc='Sensor fusion and fuzzy PID keep it upright. Smart Car competition.',
-         prize='NATIONAL 2ND PRIZE 2021', cta='READ THE POST', url='bike',
-         alt='Self-balancing motorcycle, 2021: sensor fusion and fuzzy PID, built for the Smart Car competition. National second prize. Read the blog post.'),
-    dict(key='mocap', icon='mocap', cat='WEARABLE SENSING', date='2022-05', title=['WEARABLE', 'MOCAP'], sub='',
-         desc='A body-worn motion-capture system for assessing rehabilitation.',
-         chips=['MOTION CAPTURE', 'REHAB'], cta='READ THE POST', url='mocap',
-         alt='Wearable motion capture for rehabilitation assessment, 2022. Read the blog post.'),
-    dict(key='ar360', icon='glasses', cat='IMMERSIVE SYSTEMS', date='2025-12', title=['AR360'], sub='PANORAMIC CALLING',
-         desc='Immersive calls on Rokid AR glasses with an Insta360 panoramic camera.',
-         chips=['UNITY', 'ROKID', 'INSTA360'], cta='READ THE POST', url='ar360',
-         alt='AR360 panoramic calling, 2025: immersive video calls with Unity, Rokid AR glasses and an Insta360 panoramic camera. Read the blog post.'),
-    dict(key='skills', icon='terminal', cat='AGENT WORKFLOWS', date='GITHUB', title=['PERSONAL', 'CODEX SKILLS'], sub='',
-         desc='Git-managed agent skills and shared AGENTS.md for Mac, Windows and Linux.',
-         chips=['EVIDENCE-LED ENGINEERING'], cta='BROWSE THE REPO', url='skills',
-         alt='Personal Codex skills: Git-managed agent skills and shared AGENTS.md instructions for Mac, Windows and Linux, with CI. First skill: Evidence-led Engineering. Browse the repository.'),
+# Four cards, two by two. The motorcycle is the Smart Car competition entry; it won a National second prize.
+# Everything a visitor needs beyond this one line is a click away (the blog post), and the alt text
+# carries the detail for readers who cannot see the card.
+PROJECTS = [
+    dict(key='ar360', icon='glasses', title=['AR360'], line='PANORAMIC VIDEO CALLS', url='ar360',
+         alt='AR360 panoramic calling, 2025: immersive video calls with Unity, Rokid AR glasses and an Insta360 '
+             'panoramic camera. Read the blog post.'),
+    dict(key='skills', icon='terminal', title=['CODEX SKILLS'], line='REUSABLE DEV WORKFLOWS', url='skills',
+         alt='Personal Codex skills: Git-managed agent skills and shared AGENTS.md instructions for Mac, Windows and '
+             'Linux, with CI. First skill: Evidence-led Engineering. Browse the repository.'),
+    dict(key='bike', icon='bike', title=['SELF-BALANCING', 'MOTORCYCLE'], prize='NATIONAL 2ND PRIZE 2021', url='bike',
+         alt='Self-balancing motorcycle, 2021: sensor fusion and fuzzy PID, built for the Smart Car competition. '
+             'National second prize. Read the blog post.'),
+    dict(key='mocap', icon='mocap', title=['WEARABLE', 'MOTION CAPTURE'], line='REHABILITATION ASSESSMENT', url='mocap',
+         alt='Wearable motion capture and rehabilitation assessment system, 2022. Read the blog post.'),
 ]
 
 
-def quest_card(t, q):
-    W, H = CARD_W, 260
-    inner = W - 32
+def project_card(t, q):
+    W, H = CARD_W, 132
     d = Doc(W, H, q['alt'].split(':')[0], q['alt'])
-    window(d, t, W, H, tab=q['cat'], tab_right=q['date'])
-    inset(d, t, 16, 48, 68, 68)
-    sprite(d, t, q['icon'], 18, 50, 3, box=(64, 64))
-    y = 52
+    window(d, t, W, H)
+    inset(d, t, 16, 16, 68, 68)
+    sprite(d, t, q['icon'], 18, 18, 3, box=(64, 64))
+    n = len(q['title'])
+    y = 16 + (68 - (n * 21 + (n - 1) * 8)) // 2  # the name, centred beside the icon
     for ln in q['title']:
         d.text(92, y, ln, t['text'], 3)
         y += 29
-    if q['sub']:
-        d.text(92, y + 2, q['sub'], t['sub'], 2)
-    for i, ln in enumerate(fit_lines(q['desc'], inner, 14, 2)):
-        d.add(mono_text(16, 138 + i * 19, ln, 14, t['text']))
-    if q.get('prize'):  # the one achievement: a gold chip with the medal
-        wpx = 8 + 16 + 8 + tw(q['prize'], 2) + 8
-        inset(d, t, 16, 182, wpx, 24)
+    if q.get('prize'):  # the one achievement: the medal and the prize, in gold
         rows, pal = sprites.catalogue(t)['medal']
-        d.pix(1, 24, 186).art(0, 0, rows, pal)
-        d.text(48, 187, q['prize'], t['gold_c'], 2)
+        d.pix(1, 16, 97).art(0, 0, rows, pal)
+        d.text(40, 98, q['prize'], t['gold_c'], 2)
     else:
-        x = 16
-        for lab in q['chips']:
-            x += chip(d, t, x, 182, lab) + 6
-    d.pix(2, 16, 218).rect(0, 0, inner // 2, 1, t['rule'])
-    wcta = d.text(16, 224, q['cta'], t['gold_c'], 2)
-    d.text(16 + wcta + 8, 224, '▶', t['gold_c'], 2)
+        d.text(16, 98, q['line'], t['sub'], 2)
+    d.text(W - 28, 98, '▶', t['gold_c'], 2)  # the menu cursor of the hero: this one opens
     return d
 
 
@@ -793,23 +632,6 @@ def minigames(data):
 
 
 # ======================================================================================
-# FOOTER: the sign-off and the save point
-# ======================================================================================
-
-
-def footer(t, data):
-    W, H = 720, 124
-    when = data['last_save']
-    d = Doc(W, H, 'Coding is a game', 'Coding is a game.' + (f' Last save {when}.' if when else ''))
-    window(d, t, W, H)
-    sprite(d, t, 'floppy', 28, 28, 4, box=(64, 64))
-    d.text(116, 24 if when else 40, 'CODING IS A GAME.', t['gold_c'], 6)
-    if when:
-        d.text(116, 78, f'LAST SAVE {when}', t['sub'], 4)
-    return d
-
-
-# ======================================================================================
 # README
 # ======================================================================================
 
@@ -822,24 +644,6 @@ def pic(name, alt, width, link=None, v=V):
     return f'<a href="{link}">{p}</a>' if link else p
 
 
-def deck(n_merged, n_open):
-    """The Chromium headline as a sentence; never a zero. The tail is bound so it wraps as one block."""
-    s = plural
-    if n_merged and n_open:
-        return (f"{word(n_merged)} {s(n_merged, 'change', 'changes')} merged into Chromium, "
-                f"{nb(word(n_open, True) + ' more in review.')}")
-    if n_merged:
-        return f"{word(n_merged)} {s(n_merged, 'change', 'changes')} merged into Chromium."
-    if n_open:
-        return f"{word(n_open)} {s(n_open, 'change', 'changes')} in review for Chromium."
-    return "Chromium changes will appear here as they land."
-
-
-def lines_txt(c):
-    i, d = c.get('insertions'), c.get('deletions')
-    return 'Line counts unavailable.' if i is None and d is None else f'+{i or 0} -{d or 0} lines.'
-
-
 def caption(media, text):
     """Images and their caption in ONE paragraph: the <br> keeps the caption attached to the images it
     describes, where a paragraph of its own would sit as far from them as from the next block. <sup> (small,
@@ -850,71 +654,37 @@ def caption(media, text):
 
 def readme(data, buttons):
     cls = data['cls']
-    merged = [c for c in cls if c['status'] == 'MERGED']
-    n_open = len(cls) - len(merged)
-    counted = [c for c in merged if c.get('insertions') is not None or c.get('deletions') is not None]
-    ins = sum(c.get('insertions') or 0 for c in counted)
-    dele = sum(c.get('deletions') or 0 for c in counted)
+    n_merged = sum(c['status'] == 'MERGED' for c in cls)
+    n_open = len(cls) - n_merged
     score = data['score']
-    shown = cls[-CARDS_MAX:]
+    when = data['last_save']
+    # One image per idea, and nothing a click away (the Chromium changes themselves are on Gerrit, the
+    # write-ups on the blog).
     out = ['<div align="center">', '']
-    out.append('<p>' + pic('hero', f'Calvin Diao. Less clicking. More tinkering. A pixel-art title screen with a Chromium '
-                                   f'progress HUD: {progress(len(merged), n_open)}.', 720) + '</p>')
+    out.append('<p>' + pic('hero', 'Calvin Diao. Less clicking. More tinkering. A pixel-art title screen.', 720) + '</p>')
     out.append('')
     out.append("<p><b>From sensors and PID loops, through the browser's network stack, " + nb('to AR headsets.') + '</b><br>')
     out.append('<sub>Toronto, Canada · M.Eng, McMaster University</sub></p>')
     out.append('')
     out.append('<p>' + '\n'.join(pic(f'btn-{k}', f'{lab}: {desc}', w, URL[k]) for k, lab, desc, w in buttons) + '</p>')
     out.append('')
-    out.append(f'<h3 align="center">{escape(deck(len(merged), n_open), quote=False)}</h3>')
-    out.append('')
-    route = cls[-ROUTE_MAX:]
-    stages = f'stage {route[0]["stage"]}' if len(route) == 1 else f'stages {route[0]["stage"]} to {route[-1]["stage"]}' if route else ''
-    world_alt = ('World 1, Chromium (net and DNS): '
-                 + (f'{progress(len(merged), n_open)}, drawn as a route of {stages}.' if cls else 'no changes yet.')
+    world_alt = ('Chromium, net and DNS: ' + (f'{progress(n_merged, n_open)}.' if cls else 'no changes yet.')
                  + ' Open every change on Gerrit.')
-    out.append('<p>' + pic('world', world_alt, 720, URL['gerrit']) + '</p>')
+    out.append(caption(pic('world', world_alt, 720, URL['gerrit']),
+                       f'Google Summer of Code 2025: <a href="{URL["gsoc"]}">Structured DNS {nb("errors in Chromium")}</a>'))
     out.append('')
-    cards = '\n'.join(
-        pic(f'stage-{c["_number"]}',
-            f'Chromium CL {c["_number"]}, stage {c["stage"]}: {c["subject"]}. '
-            f'{"Merged " + c["when"] if c["status"] == "MERGED" else "In review since " + c["when"]}. '
-            f'{lines_txt(c)} Open on Gerrit.', CARD_W, c['url'])
-        for c in shown)
-    # What the Google Summer of Code project was is scoped to what the blog post says (parsing); the later
-    # changes are the cards above, whatever their state, so no sentence here goes stale when one lands.
-    # Captions follow the same rule everywhere: they sit in the paragraph of the image they describe (after a
-    # <br>, so they read as attached to it and not to the next block), and they are sentences with their
-    # last words bound, so a line never ends in a bare separator or a one-word orphan.
-    gloss = (f'Google Summer of Code 2025: <a href="{URL["gsoc"]}">Structured DNS {nb("errors in Chromium")}</a><br>'
-             f'Parsing Public Resolver Errors out of Extended DNS Errors {nb("(RFC 8914)")}, toward an error page that says '
-             f'{nb("why a lookup failed.")}<br>')
-    if counted:
-        gloss += f'Merged so far: {nb(f"+{ins} −{dele} lines in chromium/src")}. '
-    gloss += f'<a href="{URL["gerrit"]}">{nb("See every change on Gerrit")}</a>.'
-    out.append(caption(cards, gloss))
-    out.append('')
-    out.append(f'<h3 align="center">{pic("h-quests", "Side quests", 720)}</h3>')
-    out.append('')
-    qc = '\n'.join(pic(f'quest-{q["key"]}', q['alt'], CARD_W, URL[q['url']]) for q in QUESTS)
-    out.append(caption(qc, f'Smart Car competition, 2020, {nb("National second prize")}: a Mecanum-wheeled vehicle that locates '
-                           f'{nb("an acoustic beacon")}. <a href="{URL["car2020"]}">{nb("Read the post")}</a>.'))
+    cards = '\n'.join(pic(f'project-{q["key"]}', q['alt'], CARD_W, URL[q['url']]) for q in PROJECTS)
+    out.append(f'<p>\n{cards}\n</p>')
     out.append('')
     still = GAME['still']
-    game = pic('minigame', ('Calvin Diao’s GitHub contribution graph.' if still else
-                            'Mini-game: a snake eats Calvin Diao’s GitHub contribution graph.')
-               + (f' Score: {score} contributions in the last year.' if score else ''), 720)
-    if score:
-        what = f'{score} contributions in the last year' + ('.' if still else f', {nb("replayed by a snake")}.')
-    else:
-        what = 'The contribution graph for the last year.' if still else 'A snake replays the last year of contributions.'
-    out.append(caption(game, f'{what} {nb("Refreshed daily by GitHub Actions.")}'))
+    game = ('Calvin Diao’s GitHub contribution graph.' if still else
+            'Mini-game: a snake eats Calvin Diao’s GitHub contribution graph.') \
+        + (f' Score: {score} contributions in the last year.' if score else '')
+    out.append('<p>' + pic('minigame', game, 720) + '</p>')
     out.append('')
-    when = data['last_save']
-    out.append('<p>' + pic('footer', 'Coding is a game.' + (f' Last save {when}.' if when else ''), 720) + '</p>')
-    out.append('')
-    out.append(f'<p><sub>{nb("Pixel art drawn in code.")} {nb("Colors from Catppuccin.")} '
-               f'Snake{NB}by{NB}<a href="{URL["snk"]}">snk</a>. {nb("Name set in DotGothic16 (SIL OFL).")}</sub></p>')
+    out.append('<p><sub>' + (nb(f'Updated {when}.') + ' ' if when else '')
+               + f'{nb("Colors from Catppuccin,")} snake{NB}by{NB}<a href="{URL["snk"]}">snk</a>, '
+               + f'{nb("name set in DotGothic16 (SIL OFL).")}</sub></p>')
     out.append('')
     out.append('</div>')
     return '\n'.join(out) + '\n'
@@ -933,7 +703,7 @@ def audit():
         for bg in (t['panel'], t['panel_deep']):
             for fg in ('text', 'sub', 'gold_c', 'green_c', 'red_c'):
                 pairs.append((f'{tk}: {fg} on panel {bg}', t[fg], bg))
-        for fg in ('tab_fg', 'tab_sub', 'tab_green'):
+        for fg in ('tab_fg', 'tab_sub'):
             pairs.append((f'{tk}: {fg} on title bar', t[fg], t['tab_bg']))
         gcol = mix(t['green'], t['panel'], .90 if tk == 'mocha' else .86)
         for fg in ('text', 'sub', 'gold_c', 'green_c'):
@@ -945,8 +715,6 @@ def audit():
                 bad.append(f'{tk}: hero title on its {label} shadow: {contrast(name_col, sh):.2f} < 3.0')
         for i, sc in enumerate(sky_stops(t)):
             pairs.append((f'{tk}: hero title on sky[{i}]', name_col, sc))
-            if i <= 1:
-                pairs.append((f'{tk}: hero HUD gold on sky[{i}]', t['gold_t'], sc))
             if i >= 3:
                 pairs.append((f'{tk}: hero menu gold on sky[{i}]', t['gold_m'], sc))
                 pairs.append((f'{tk}: hero menu sub on sky[{i}]', t['sub'], sc))
@@ -973,19 +741,14 @@ def check_workflow():
 def main():
     live = '--live' in sys.argv
     data = datamod.load(live=live)
-    cls = data['cls']
     BTN = [('blog', 'BLOG', 'Blog', 'read the blog'), ('gerrit', 'GERRIT', 'Gerrit', 'every Chromium change on Gerrit'),
            ('linkedin', 'LINKEDIN', 'LinkedIn', 'LinkedIn profile')]
     buttons = []
     for tk, t in THEMES.items():
-        hero(t, data)
+        hero(t)
         world(t, data)
-        for c in cls[-CARDS_MAX:]:
-            save(f'stage-{c["_number"]}', tk, stage_card(t, c).render())
-        for q in QUESTS:
-            save(f'quest-{q["key"]}', tk, quest_card(t, q).render())
-        save('h-quests', tk, heading(t, 'SIDE QUESTS').render())
-        save('footer', tk, footer(t, data).render())
+        for q in PROJECTS:
+            save(f'project-{q["key"]}', tk, project_card(t, q).render())
         buttons = []
         for k, lab, name, desc in BTN:
             b = button(t, lab, name)
