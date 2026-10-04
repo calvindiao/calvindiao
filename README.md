@@ -20,7 +20,7 @@
 <a href="https://techliker.com/wearable-rehab-mocap/"><picture><source media="(prefers-color-scheme: dark)" srcset="./profile/project-mocap-mocha.svg?v=3"><source media="(prefers-color-scheme: light)" srcset="./profile/project-mocap-latte.svg?v=3"><img src="./profile/project-mocap-mocha.svg?v=3" width="356" alt="Wearable motion capture and rehabilitation assessment system, 2022. Read the blog post."></picture></a>
 </p>
 
-<p><picture><source media="(prefers-color-scheme: dark)" srcset="./profile/minigame-mocha.svg?v=3"><source media="(prefers-color-scheme: light)" srcset="./profile/minigame-latte.svg?v=3"><img src="./profile/minigame-mocha.svg?v=3" width="720" alt="Mini-game: a snake eats Calvin Diao’s GitHub contribution graph. Score: 340 contributions in the last year."></picture></p>
+<p><picture><source media="(prefers-color-scheme: dark)" srcset="./profile/minigame-mocha.svg?v=3"><source media="(prefers-color-scheme: light)" srcset="./profile/minigame-latte.svg?v=3"><img src="./profile/minigame-mocha.svg?v=3" width="720" alt="Mini-game: a snake eats Calvin Diao’s GitHub contribution graph. Score: 342 contributions in the last year."></picture></p>
 
 <p><sub>Updated 2026-10-04. Colors from Catppuccin, snake by <a href="https://github.com/Platane/snk">snk</a>, name set in DotGothic16 (SIL OFL).</sub></p>
 
