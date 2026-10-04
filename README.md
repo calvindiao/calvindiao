@@ -30,10 +30,10 @@
 <br><sup>Smart Car competition, 2020, National second prize: a Mecanum-wheeled vehicle that locates an acoustic beacon. <a href="https://techliker.com/smart-car-2020/">Read the post</a>.</sup></p>
 
 <p>
-<picture><source media="(prefers-color-scheme: dark)" srcset="./profile/minigame-mocha.svg?v=2"><source media="(prefers-color-scheme: light)" srcset="./profile/minigame-latte.svg?v=2"><img src="./profile/minigame-mocha.svg?v=2" width="720" alt="Mini-game: a snake eats Calvin Diao’s GitHub contribution graph. Score: 336 contributions in the last year."></picture>
-<br><sup>336 contributions in the last year, replayed by a snake. Refreshed daily by GitHub Actions.</sup></p>
+<picture><source media="(prefers-color-scheme: dark)" srcset="./profile/minigame-mocha.svg?v=2"><source media="(prefers-color-scheme: light)" srcset="./profile/minigame-latte.svg?v=2"><img src="./profile/minigame-mocha.svg?v=2" width="720" alt="Mini-game: a snake eats Calvin Diao’s GitHub contribution graph. Score: 340 contributions in the last year."></picture>
+<br><sup>340 contributions in the last year, replayed by a snake. Refreshed daily by GitHub Actions.</sup></p>
 
-<p><picture><source media="(prefers-color-scheme: dark)" srcset="./profile/footer-mocha.svg?v=2"><source media="(prefers-color-scheme: light)" srcset="./profile/footer-latte.svg?v=2"><img src="./profile/footer-mocha.svg?v=2" width="720" alt="Coding is a game. Last save 2026-10-03."></picture></p>
+<p><picture><source media="(prefers-color-scheme: dark)" srcset="./profile/footer-mocha.svg?v=2"><source media="(prefers-color-scheme: light)" srcset="./profile/footer-latte.svg?v=2"><img src="./profile/footer-mocha.svg?v=2" width="720" alt="Coding is a game. Last save 2026-10-04."></picture></p>
 
 <p><sub>Pixel art drawn in code. Colors from Catppuccin. Snake by <a href="https://github.com/Platane/snk">snk</a>. Name set in DotGothic16 (SIL OFL).</sub></p>
 
