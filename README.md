@@ -22,6 +22,6 @@
 
 <p><picture><source media="(prefers-color-scheme: dark)" srcset="./profile/minigame-mocha.svg?v=3"><source media="(prefers-color-scheme: light)" srcset="./profile/minigame-latte.svg?v=3"><img src="./profile/minigame-mocha.svg?v=3" width="720" alt="Mini-game: a snake eats Calvin Diao’s GitHub contribution graph. Score: 449 contributions in the last year."></picture></p>
 
-<p><sub>Updated 2026-10-13. Colors from Catppuccin, snake by <a href="https://github.com/Platane/snk">snk</a>, name set in DotGothic16 (SIL OFL).</sub></p>
+<p><sub>Updated 2026-10-14. Colors from Catppuccin, snake by <a href="https://github.com/Platane/snk">snk</a>, name set in DotGothic16 (SIL OFL).</sub></p>
 
 </div>
